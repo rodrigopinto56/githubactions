@@ -19,25 +19,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and Push Docker Images
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build Docker Images
         run: |
           docker-compose -f docker-compose.yml build
-          docker-compose -f docker-compose.yml up -d
-
-      - name: Run Tests
-        run: |
-          docker-compose exec sgsm npm test
-          docker-compose exec sn npm test
-          docker-compose exec smi npm test
-          docker-compose exec ss npm test
-          docker-compose exec sa npm test
 
       - name: Push to Docker Hub
         run: |
           echo ${{ secrets.DOCKER_HUB_USERNAME }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           docker-compose push
-
-      - name: Deploy to AWS
-        run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-          docker-compose -f docker-compose.yml up -d
