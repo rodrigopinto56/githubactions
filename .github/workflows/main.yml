@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Build and Push Docker
 
 on:
   push:
@@ -19,16 +19,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Set up Docker Compose
+      - name: Set up Docker Compose (manual installation)
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
       - name: Build Docker Images
-        run: |
-          docker-compose -f docker-compose.yml build
+        run: docker-compose -f docker-compose.yml build
 
       - name: Push to Docker Hub
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
-          echo ${{ secrets.DOCKER_HUB_USERNAME }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
           docker-compose push
