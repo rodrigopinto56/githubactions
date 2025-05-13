@@ -1,0 +1,51 @@
+services:
+  sgsm:
+    build: ./SGSM
+    ports:
+      - "8001:8001"
+    networks:
+      - ciudad-inteligente
+
+  sn:
+    build: ./SN
+    ports:
+      - "8002:8002"
+    networks:
+      - ciudad-inteligente
+
+  smi:
+    build: ./SMI
+    ports:
+      - "8003:8003"
+    networks:
+      - ciudad-inteligente
+
+  ss:
+    build: ./SS  # Verifica que esta ruta sea correcta
+    ports:
+      - "8004:8004"
+    networks:
+      - ciudad-inteligente
+
+  sa:
+    build: ./SA
+    ports:
+      - "8005:8005"
+    networks:
+      - ciudad-inteligente
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ciudad_inteligente
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - ciudad-inteligente
+
+networks:
+  ciudad-inteligente:
+    driver: bridge
